@@ -7,23 +7,37 @@
 #include <ctime>
 #include <sstream>
 #include <thread>
+#include <unordered_map>
 
 using namespace std;
+
+void thread_click(LPCSTR &WindowName)  
+{
+	std::cout << "Thread 2 started" << std::endl;
+	HWND hwnd = FindWindowA(NULL, WindowName);
+	hwnd = GetForegroundWindow();
+	while (true == true)
+	{
+		std::cout << "clickin" << std::endl;
+		Sleep(2000);
+	}
+}
 
 int main()
 {
 	srand(time(NULL));
+	bool toggle_state = true;
 	bool loopd = true;
 	bool sus = true;
 	int state;
 	double cps = 0;
 	bool cont = true;
 	string translate = "";
-	LPCTSTR WindowName = NULL;
+	LPCSTR WindowName = NULL;
 	POINT pt;
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	// SetConsoleTextAttribute(hStdOut, FOREGROUND_RED);
-	cout << "Zlads Clicker Made by ZeyKra_ lol" << endl;
+	cout << "RazerSynapse3 by ZeyKra_ lol" << endl;
 	cout << "" << endl;
 	while (cont)
 	{
@@ -37,21 +51,22 @@ int main()
 	}
 	if (cps)
 	{
-		LPCTSTR WindowName = "RazerSynapse3 By ZeyKra_";
+		WindowName = "Razer Synapse3";
 	}
 	HWND hwnd = FindWindowA(NULL, WindowName);
+	/*
 	if (hwnd == NULL)
 	{
 		cout << "Programme non trouvé" << endl;
 		Sleep(2000);
 		exit(-2);
 	}
-	else
+	*/
 	{
 		hwnd = GetForegroundWindow();
-		Sleep(1000);
+		//Sleep(1000);
 		cout << "Lancement de RazerSynapse3..." << endl;
-		Sleep(1000);
+		//Sleep(1000);
 		cout << "RazerSynapse3 operationnel !" << endl;
 		cout << " " << endl;
 		cout << " " << endl;
@@ -66,9 +81,24 @@ int main()
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
 	}
 
-	while (sus = true)
+	std::thread t1([&toggle_state]()
+				   {
+		std::unordered_map<int, bool> pressed;
+		std::cout << "thread 1 started" << std::endl;
+		while (true == true) {
+			if(GetAsyncKeyState(VK_F9)) {
+				if(!pressed[VK_F9]) {
+					pressed[VK_F9] = true;
+					toggle_state = !toggle_state; 
+					std::cout << (toggle_state ? "toggle_state : true" : "toggle_state : false") << std::endl;
+				}
+			} else { pressed[VK_F9] = false; }
+		} });
+		
+	//std::thread t2(thread_click, std::ref(WindowName));
+
+	while (sus == true)
 	{
-		loopd = true;
 		hwnd = GetForegroundWindow();
 		if (GetAsyncKeyState(VK_END))
 		{
@@ -80,53 +110,28 @@ int main()
 			state = 1;
 		}
 
-		std::thread t1([]() {
-			std::pair<std::string, int> pressed[2]
-			bool toggle_state = false;
-			bool f9_pressed = false;
-			while (true == true) {
-				if(GetAsyncKeyState(VK_F9)) {
-					if(!f9_pressed) {
-						f9_pressed = true;
-						toggle_state = !toggle_state; 
-						std::cout << (toggle_state ? "toggle_state : true" : "toggle_state : false") << std::endl;
-					}
-				} else { f9_pressed = false; }
-			}
-		});
-		t1.join();
+		// Si l'autoclique n'est pas activé on skip l'iteration
+		if (!toggle_state) {
+			continue;
+		}
 
-		while (GetAsyncKeyState(VK_LBUTTON))
+		if (GetAsyncKeyState(VK_LBUTTON))
 		{
+			//std::cout << "click" << std::endl;
+			/* Futur rand implementaiton
 			int min = -20;
-			int max = 50;
-			// int delay = (cps + min + (rand() % (int)(max - min + 1)));
-			int add = (cps / 10);
-			int finalcps = (cps + add);
-			int cc = (1000 / finalcps);
-			int delay = (cc / 2); //+ (rand() % (int)(max - min)));
-			// SetConsoleTextAttribute(hStdOut, 15);
+			//int max = 50;
+			int delay = (cps + min + (rand() % (int)(max - min + 1)));
+			*/
+			int delay = (1000 / cps) - 1;
+			
 			GetCursorPos(&pt);
+			// SetConsoleTextAttribute(hStdOut, 15);
 			SendMessage(hwnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(pt.x, pt.y));
-			Sleep(delay);
+			Sleep(1);
 			SendMessage(hwnd, WM_LBUTTONUP, 0, MAKELPARAM(pt.x, pt.y));
 			Sleep(delay);
 		}
-
-		if (GetAsyncKeyState(0x76))
-		{
-			if (sus == true)
-			{
-				while (loopd)
-				{
-					sus = false;
-					if (GetAsyncKeyState(0x76))
-					{
-						loopd = false;
-						sus = true;
-					}
-				}
-			}
-		}
+			
 	}
 }
