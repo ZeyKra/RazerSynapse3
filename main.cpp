@@ -18,7 +18,7 @@ void thread_click(LPCSTR &WindowName)
 	hwnd = GetForegroundWindow();
 	while (true == true)
 	{
-		std::cout << "clickin" << std::endl;
+		std::cout << "clickin" << "\n";
 		Sleep(2000);
 	}
 }
